@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "145373058201",
+    "project_id": "mygiggz-c8aed",
+    "storage_bucket": "mygiggz-c8aed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145373058201:android:7e11a7d24b892a5d5d9408",
+        "android_client_info": {
+          "package_name": "com.karolinadart.my_giggz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "145373058201-r77r5eqquaqmg6gimbqh5g8ge0coq13q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOCxLBT9R2McCR85YR6ykuA6pw43f317g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "145373058201-r77r5eqquaqmg6gimbqh5g8ge0coq13q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
