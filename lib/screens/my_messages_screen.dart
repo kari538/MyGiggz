@@ -7,7 +7,10 @@ import 'package:my_giggz/myself.dart';
 
 class MyMessagesScreen extends StatefulWidget {
   @override
-  _MyMessagesScreenState createState() => _MyMessagesScreenState();
+  _MyMessagesScreenState createState() {
+    michaelTracker('${this.runtimeType}');
+    return _MyMessagesScreenState();
+  }
 }
 
 class _MyMessagesScreenState extends State<MyMessagesScreen> {
@@ -45,7 +48,7 @@ class _MyMessagesScreenState extends State<MyMessagesScreen> {
       appBar: AppBar(title: Text('My Messages')),
       body: SingleChildScrollView(
         child: StreamBuilder<QuerySnapshot>(
-          stream: MyFirebase.storeObject.collection(kCollectionConversations).where(kFieldParticipantsArray, arrayContains: myUid).snapshots(),
+          stream: MyFirebase.storeObject.collection(kCollectionConversations).where(kFieldParticipantsArray, arrayContains: myUid).orderBy(kFieldLastTimeStamp, descending: true).snapshots(),
           builder: (context, asyncSnapshot) {
             List<Widget> convCards = [];
             int i = 0;
@@ -59,10 +62,9 @@ class _MyMessagesScreenState extends State<MyMessagesScreen> {
                 String myName = Myself.userData[kFieldFirstName];
                 String name = myName; //At first... for conversations w myself
                 for(String participant in convData[kFieldParticipants].keys){
+                  //If there is any participant in the conversation who is not me, that should be the name:
                   if(participant != myName) name = participant;
                 }
-                // = convData[kFieldFirstName];
-                // String news = '??';
                 newsList.add(0);
                 Future<int> newNews = countNewMsg(conv.id, /*, i*/);
                 updateNews(i, newNews);
@@ -86,7 +88,7 @@ class _MyMessagesScreenState extends State<MyMessagesScreen> {
                         }));
                       },
 
-                  child: Padding(
+                    child: Padding(
                       padding: const EdgeInsets.fromLTRB(1, 1, 1, 1),
                       child: Container(
                         color: Colors.blue,

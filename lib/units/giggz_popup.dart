@@ -1,3 +1,4 @@
+import 'package:my_giggz/my_types_and_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
@@ -32,13 +33,28 @@ class GiggzPopup extends Alert {
   );
 }
 
+class FirebaseErrorPopup extends GiggzPopup {
+  FirebaseErrorPopup({@required this.context, @required this.e}) {
+    code = e.code;
+    formattedCode = code.replaceAll('-', ' ');
+    title = '${capitalizeFirst(formattedCode)}!';
+    desc = '${e.message}';
+  }
 
+  BuildContext context;
+  var e;
+  String code;
+  String formattedCode;
+  String title;
+  String desc;
+}
 
 class GiggzPopupButton extends StatelessWidget {
   const GiggzPopupButton({
     @required this.text,
     @required this.onPressed,
   });
+
   final String text;
   final Function onPressed;
 

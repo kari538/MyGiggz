@@ -11,7 +11,7 @@ import 'package:my_giggz/firebase_labels.dart';
 import 'package:my_giggz/giggz_theme.dart';
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
   // const ProfileScreen({@required this.userData});
   // const ProfileScreen();
 
@@ -60,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
             context,
             PageRouteBuilder(
               // pageBuilder: (context, animation1, animation2) => ProfileScreen(userData: userData),
-              pageBuilder: (context, animation1, animation2) => ProfileScreen(),
+              pageBuilder: (context, animation1, animation2) => HomeScreen(),
               transitionDuration: Duration(seconds: 0),
             ),
           );
@@ -86,7 +86,7 @@ class ProfileScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(text, textAlign: TextAlign.start),
-          Text('${userData[field]}', textAlign: TextAlign.end, style: style ?? Theme.of(context).textTheme.bodyText2),
+          Expanded(child: Text('${userData[field]}', textAlign: TextAlign.end, style: style ?? Theme.of(context).textTheme.bodyText2)),
         ],
       ),
     );
@@ -98,6 +98,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    michaelTracker('${this.runtimeType}');
     return Scaffold(
       appBar: AppBar(actions: [ProfileMenu()]
           // [PopupMenuButton(itemBuilder: (context) => profileMenu(context), onSelected: (value){
@@ -119,17 +120,15 @@ class ProfileScreen extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: FittedBox(
-                    clipBehavior: Clip.hardEdge,
-                    child: Image(
-                      image: AssetImage('images/michael/IMG-20201208-WA0035.jpg'),
-                      // fit: BoxFit.contain,
-                    ),
+                  width: /*MediaQuery.of(context).orientation == Orientation.landscape ? MediaQuery.of(context).size.height :*/ MediaQuery.of(context).size.width,
+                  child: Image(
+                    image: AssetImage('images/michael/IMG-20201208-WA0035.jpg'),
+                    fit: BoxFit.contain,
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height/4,
+                  height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height/4 : MediaQuery.of(context).size.width/4,
+                  // width: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height/4 : MediaQuery.of(context).size.width/4,
                   child: Column(
                     children: [
                       Expanded(

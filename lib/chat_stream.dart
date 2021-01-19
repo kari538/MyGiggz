@@ -1,3 +1,6 @@
+import 'my_types_and_functions.dart';
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 
 import 'firebase_labels.dart';
@@ -5,7 +8,7 @@ import 'my_firebase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-//Straight from Angela's Flash Chat:
+//Design straight from Angela's Flash Chat:
 class MessageStream extends StatelessWidget {
   MessageStream({@required this.convId, @required this.myUid, @required this.convIdReady});
   final String convId;
@@ -30,9 +33,10 @@ class MessageStream extends StatelessWidget {
         final messages = snapshot.data.docs.reversed;
         // final messages = snapshot.data.docs;
         List<MessageBubble> messageBubbles = [];
-        for (var message in messages) {
+        for (DocumentSnapshot message in messages) {
           final messageText = message.data()[kFieldMessage];
           final senderUid = message.data()[kFieldSender];
+          final timeStamp = message.data()[kFieldTimeStamp];
 
           // final currentUser = loggedInUser.email;
 
@@ -40,6 +44,7 @@ class MessageStream extends StatelessWidget {
             // sender: senderUid,
             text: messageText,
             isMe: myUid == senderUid,
+            timeStamp: timeStamp,
           );
 
           messageBubbles.add(messageBubble);
@@ -61,11 +66,12 @@ class MessageStream extends StatelessWidget {
 class MessageBubble extends StatelessWidget {
   MessageBubble({
     // this.sender,
-    this.text, this.isMe});
+    this.text, this.isMe, this.timeStamp});
 
   // final String sender;
   final String text;
   final bool isMe;
+  final Timestamp timeStamp;
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +81,6 @@ class MessageBubble extends StatelessWidget {
         crossAxisAlignment:
         isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
-          // Text(
-          //   sender,
-          //   style: TextStyle(
-          //     fontSize: 12.0,
-          //     color: Colors.black54,
-          //   ),
-          // ),
           Material(
             borderRadius: isMe
                 ? BorderRadius.only(
@@ -104,6 +103,18 @@ class MessageBubble extends StatelessWidget {
                   color: isMe ? Colors.white : Theme.of(context).scaffoldBackgroundColor,
                   fontSize: 15.0,
                 ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              // 'Monday Jan 13 15:30',
+              '${formatTimestamp(timeStamp)}',
+              textAlign: isMe ? TextAlign.end : TextAlign.start,
+              style: TextStyle(
+                fontSize: 12.0,
+                color: Colors.black54,
               ),
             ),
           ),

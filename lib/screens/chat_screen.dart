@@ -1,3 +1,4 @@
+import 'view_profile_screen.dart';
 import 'package:my_giggz/chat_stream.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_giggz/myself.dart';
@@ -11,7 +12,10 @@ class ChatScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
 
   @override
-  _ChatScreenState createState() => _ChatScreenState(userData);
+  _ChatScreenState createState() {
+    michaelTracker('${this.runtimeType}');
+    return _ChatScreenState(userData);
+  }
 }
 
 class _ChatScreenState extends State<ChatScreen> {
@@ -36,6 +40,18 @@ class _ChatScreenState extends State<ChatScreen> {
     myUid = myUserData[kFieldUid];  //This is where it crashes
     futureConvId = getConversationId();
     waitForConvId();
+    lookForDrafts();
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    if(msg != ''){
+      MyFirebase.storeObject.collection(kCollectionConversations).doc(await futureConvId).collection(kSubCollectionChat).doc().set({
+        kFieldDraft: '$msg',
+        kFieldSender: myUid,
+      });
+    }
   }
 
   Future<String> getConversationId() async {
@@ -92,6 +108,22 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void lookForDrafts() async {
+    QuerySnapshot drafts = await MyFirebase.storeObject.collection(kCollectionConversations).doc(await futureConvId).collection(kSubCollectionChat).orderBy(kFieldDraft).get();
+    if(drafts.docs.isNotEmpty){
+      for(DocumentSnapshot draft in drafts.docs){
+        Map<String, dynamic> draftData = draft.data();
+        if(draftData[kFieldSender] == myUid){
+          //This draft is mine
+          setState(() {
+            msgFieldController.text = msg = draftData[kFieldDraft];
+          });
+          MyFirebase.storeObject.collection(kCollectionConversations).doc(await futureConvId).collection(kSubCollectionChat).doc(draft.id).delete();
+        }
+      }
+    }
+  }
+
   // List<Widget> messages() {
   //   return [Text('hi')];
   // }
@@ -100,7 +132,16 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.lightBlue.shade100,
-      appBar: AppBar(title: Text('Chat with ${yourUserData[kFieldFirstName]}'),),
+      appBar: AppBar(
+        title: GestureDetector(
+            child: Text('Chat with ${yourUserData[kFieldFirstName]}'),
+          onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context){
+                return ViewProfileScreen(userData: yourUserData);
+              }));
+          },
+        ),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -108,9 +149,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
         children: [
           SizedBox(),
-          MessageStream(convId: convId, myUid: myUid, convIdReady: convIdReady,),
+          MessageStream(
+            convId: convId,
+            myUid: myUid,
+            convIdReady: convIdReady,
+          ),
           TextField(
-            onChanged: (value){
+            onChanged: (value) {
               setState(() {
                 msg = value;
               });
@@ -124,14 +169,22 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Icon(Icons.send, color: Colors.white),
                 onTap: msg == '' ? null : () async {
                   msgFieldController.clear();
+                  FieldValue timestamp = FieldValue.serverTimestamp();
+                  // Timestamp timestamp = FieldValue.serverTimestamp();
                   MyFirebase.storeObject.collection(kCollectionConversations).doc(await futureConvId).collection(kSubCollectionChat).doc().set({
                     kFieldMessage: '$msg',
                     kFieldSender: myUid,
-                    kFieldTimeStamp: FieldValue.serverTimestamp(),
+                    kFieldTimeStamp: timestamp,
                     kFieldDelivered: false,
                     kFieldRead: false,
                   });
-                  msgFieldController.value = TextEditingValue(text: '', );
+                  MyFirebase.storeObject.collection(kCollectionConversations).doc(await futureConvId).update({
+                    kFieldLastTimeStamp: timestamp,
+                    myUid: myUserData[kFieldFirstName],
+                  });
+                  msgFieldController.value = TextEditingValue(
+                    text: '',
+                  );
                   print('After controller.value = "", msg = $msg and controller.value = ${msgFieldController.value}');
                   setState(() {
                     msg = '';

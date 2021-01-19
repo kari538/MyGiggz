@@ -1,26 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:my_giggz/constants.dart';
 import 'loading_screen.dart';
 import 'users_screen.dart';
 import 'package:my_giggz/giggz_theme.dart';
-
 // import 'package:my_giggz/message_notification_stream.dart';
-// import 'package:my_giggz/screens/users_screen.dart';
 import 'package:my_giggz/myself.dart';
 // import 'dart:math';
-import 'profile_screen.dart';
+import 'home_screen.dart';
 import 'package:my_giggz/firebase_labels.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_giggz/my_firebase.dart';
-
-// import 'loading_screen.dart';
 import 'login_screen.dart';
 import 'user_type_screen.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
 
-  Future<bool> perhapsLoggedIn() async {
+  Future<bool> isLoggedIn() async {
     await MyFirebase.myFutureFirebaseApp;
-    var user = MyFirebase.authObject.currentUser;
+    User user = MyFirebase.authObject.currentUser;
+    print('user is $user');
     // if (user == null) {
     if (user != null) {
       String myUid = MyFirebase.authObject.currentUser.uid;
@@ -42,7 +41,8 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Building Welcome Screen');
+    print('Building ${this.runtimeType}');
+    Future<bool> perhapsLoggedIn = isLoggedIn();
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -52,29 +52,37 @@ class WelcomeScreen extends StatelessWidget {
               child: Row(
                 children: [
                   GestureDetector(
-                    child: Text('Log in', style: TextStyle(fontSize: 18)),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 8, 5, 8),
+                      child: Text('Log in', style: TextStyle(fontSize: 18)),
+                    ),
                     onTap: () async {
-                      // Navigator.push(context, MaterialPageRoute(builder: (context){
-                      //   return LoadingScreen();
-                      // }));
-                        bool loggedIn = await perhapsLoggedIn();
+                        Navigator.push(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2){
+                          return LoadingScreen();
+                        }));
+                        perhapsLoggedIn = isLoggedIn();
+                        bool loggedIn = await perhapsLoggedIn;
+                        print('loggedIn is $loggedIn');
                         if(loggedIn)
                           {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                            Navigator.pushReplacement(context, MaterialPageRoute(settings: RouteSettings(name: routeHomeScreen), builder: (context) {
                           // return ProfileScreen(userData: userData);
-                          return ProfileScreen();
+                          return HomeScreen();
                           // return SearchScreen();
                         }));
                       } else {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
                           return LoginScreen(popWhenDone: false);
                         }));
                       }
                     },
                   ),
-                  SizedBox(child: Center(child: Text('|', style: TextStyle(fontSize: 22))), width: 10,),
+                  SizedBox(child: Center(child: Text('|', style: TextStyle(fontSize: 22))), /*width: 10,*/),
                   GestureDetector(
-                    child: Text('Sign up', style: TextStyle(fontSize: 18)),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(5, 8, 0, 8),
+                      child: Text('Sign up', style: TextStyle(fontSize: 18)),
+                    ),
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
                         return UserTypeScreen(popWhenDone: false);
@@ -130,14 +138,14 @@ class WelcomeScreen extends StatelessWidget {
                 Column(
                   children: [
                    RaisedButton(
-                      child: Text('Search'),
+                      child: Text('Search MyGiggz'),
                       onPressed: () async {
                         Navigator.push(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2){
                           return LoadingScreen();
                         }));
                         //So that I put my info in Myself.userData if logged in:
-                        await perhapsLoggedIn();
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                        await perhapsLoggedIn;
+                        Navigator.pushReplacement(context, MaterialPageRoute(settings: RouteSettings(name: routeUsersScreen), builder: (context){
                           return UsersScreen();
                           // return SearchCriteriaScreen();
                         }));

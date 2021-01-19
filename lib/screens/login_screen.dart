@@ -1,10 +1,11 @@
+import 'package:my_giggz/constants.dart';
 import 'package:my_giggz/my_types_and_functions.dart';
 
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:my_giggz/myself.dart';
 import 'file:///C:/Users/karol/AndroidStudioProjects/my_giggz/lib/units/giggz_popup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'profile_screen.dart';
+import 'home_screen.dart';
 import 'package:my_giggz/firebase_labels.dart';
 import 'package:my_giggz/my_firebase.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -15,7 +16,10 @@ class LoginScreen extends StatefulWidget {
   final bool popWhenDone;
 
   @override
-  _LoginScreenState createState() => _LoginScreenState(popWhenDone);
+  _LoginScreenState createState(){
+    michaelTracker('${this.runtimeType}');
+    return _LoginScreenState(popWhenDone);
+  }
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -37,9 +41,17 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SizedBox(
                 width: MediaQuery.of(context).size.width,
-                child: Image(
-                  image: AssetImage('images/michael/IMG-20201208-WA0039.jpg'),
-                  fit: BoxFit.cover,
+                child: GestureDetector(
+                  child: Image(
+                    image: AssetImage('images/michael/IMG-20201208-WA0039.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                  onTap: (){
+                    setState(() {
+                      userEmail = "karolinahagegard@gmail.com";
+                      password = '123456';
+                    });
+                  },
                 ),
               ),
               Padding(
@@ -128,10 +140,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (popWhenDone) {
                                   Navigator.pop(context);
                                 } else {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                                  Navigator.pushReplacement(context, MaterialPageRoute(settings: RouteSettings(name: routeHomeScreen), builder: (context) {
                                     // return ProfileScreen(firstName: firstName);
                                     // return ProfileScreen(userData: userData);
-                                    return ProfileScreen();
+                                    return HomeScreen();
                                   }));
                                 }
                               }
@@ -154,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Myself.userData = userData;
                               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
                                 // return ProfileScreen(userData: userData);
-                                return ProfileScreen();
+                                return HomeScreen();
                               }));
                             },
                           ),

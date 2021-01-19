@@ -1,16 +1,12 @@
+import 'package:my_giggz/profile_menu.dart';
 import 'view_profile_screen.dart';
 import 'package:my_giggz/constants.dart';
 import 'package:my_giggz/my_types_and_functions.dart';
 import 'package:my_giggz/screens/search_criteria_screen.dart';
-
-// import 'package:my_giggz/my_types_and_functions.dart';
-// import 'package:my_giggz/screens/register_screen.dart';
 import 'package:my_giggz/screens/user_type_screen.dart';
 import 'file:///C:/Users/karol/AndroidStudioProjects/my_giggz/lib/units/giggz_popup.dart';
 import 'package:my_giggz/screens/login_screen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-
-// import 'package:my_giggz/main.dart';
 import 'chat_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_giggz/firebase_labels.dart';
@@ -19,7 +15,10 @@ import 'package:flutter/material.dart';
 
 class UsersScreen extends StatefulWidget {
   @override
-  _UsersScreenState createState() => _UsersScreenState();
+  _UsersScreenState createState(){
+    michaelTracker('${this.runtimeType}');
+    return _UsersScreenState();
+  }
 }
 
 class _UsersScreenState extends State<UsersScreen> {
@@ -121,31 +120,38 @@ class _UsersScreenState extends State<UsersScreen> {
               }));
               print('Result of SearchCriteriaScreen() is $criteria');
               setState(() {
-                //New search with criteria
+                //Will rebuild to make new search with criteria
               });
             },
             iconSize: 45,
             // color: Colors.white,
           ),
+          ProfileMenu(),
         ],
       ),
       body: SingleChildScrollView(
         child: StreamBuilder<QuerySnapshot>(
-          stream: MyFirebase.storeObject.collection(kCollectionUserInfo).orderBy(kFieldFirstName, descending: true).snapshots(),
-          // stream: MyFirebase.storeObject.collection(kCollectionUserInfo).where(kFieldFirstName, isEqualTo: '${criteria['critName']}').snapshots(),
+          // stream: MyFirebase.storeObject.collection(kCollectionUserInfo).orderBy(kFieldFirstName, descending: true).snapshots(),
+          stream: MyFirebase.storeObject.collection(kCollectionUserInfo).where(kFieldVisible, isEqualTo: true).snapshots(),
           builder: (context, asyncSnapshot) {
             List<Widget> userCards = [];
             QuerySnapshot foundUsers = asyncSnapshot.data;
             if (foundUsers != null) {
               //It always wants to be null at first, and then I get errors for calling on null.
-              for (QueryDocumentSnapshot user in foundUsers.docs) {
+
+              // print('First user is ${foundUsers.docs[0].data()[kFieldFirstName]} before\n********************************************');
+              List<QueryDocumentSnapshot> sortedUsers = foundUsers.docs;
+              sortedUsers.sort((docA, docB){
+                return docA.data()[kFieldFirstName].compareTo(docB.data()[kFieldFirstName]);
+              });
+              // print('First user is ${sortedUsers[0].data()[kFieldFirstName]} after\n********************************************');
+
+              // for (QueryDocumentSnapshot user in foundUsers.docs) {
+              for (QueryDocumentSnapshot user in sortedUsers) {
                 // print(user);
                 Map<String, dynamic> userData = user.data();
                 if (criteria != null) {
                   if (criteria[critName] != null) {
-                    String x = 'ji';
-                    // if(x.contains('other'));
-                    x.toLowerCase();
                     // print('In StreamBuilder: userData[kFieldFirstName] is ${userData[kFieldFirstName]} and');
                     // print('criteria[critName] is ${criteria[critName]}');
                     //If first or last name of a user contains the string searched for, add that user:
@@ -153,7 +159,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       addUserCard(userCards: userCards, userData: userData);
                     }
                   } else if(criteria[critEmail] != null){
-                    if (userData[kFieldEmail].toLowerCase().contains(criteria[critEmail].toLowerCase())) {
+                    if (userData[kFieldEmail].toLowerCase().contains(criteria[critEmail].toLowerCase()) ) {
                       addUserCard(userCards: userCards, userData: userData);
                     }
                   } else if(criteria[critUserType] != null){
@@ -178,8 +184,8 @@ class _UsersScreenState extends State<UsersScreen> {
               criteria == null
                   ? SizedBox()
                   : Text('Found users with '
-                      '${criteria[critName] != null ? 'name ${criteria[critName]}:' : ''} '
-                      '${criteria[critEmail] != null ? 'email ${criteria[critEmail]}:' : ''} '),
+                      '${criteria[critName] != null ? 'name ${criteria[critName]}:' : ''}'
+                      '${criteria[critEmail] != null ? 'email ${criteria[critEmail]}:' : ''}'),
               userCards.isEmpty
                   ? Container(
                 height: 100,
@@ -239,3 +245,12 @@ class CancelButton extends DialogButton {
     );
   }
 }
+
+///Sort list:
+// List<String> numbers = ['one', 'two', 'three', 'four'];
+// print('numbers before is $numbers');
+// numbers.sort();
+// // numbers.sort((no1, no2){
+// //   return no1.compareTo(no2);
+// // });
+// print('numbers after is $numbers');

@@ -1,7 +1,8 @@
+import 'package:my_giggz/constants.dart';
 import 'package:my_giggz/myself.dart';
 import 'package:my_giggz/firebase_labels.dart';
 
-import 'profile_screen.dart';
+import 'home_screen.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'file:///C:/Users/karol/AndroidStudioProjects/my_giggz/lib/units/giggz_popup.dart';
 import 'package:my_giggz/my_firebase.dart';
@@ -10,8 +11,8 @@ import 'package:my_giggz/my_types_and_functions.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
-   // const RegisterScreen({@required this.userType, @required this.popWhenDone});
-   RegisterScreen({@required this.userType, @required this.popWhenDone}){
+  // const RegisterScreen({@required this.userType, @required this.popWhenDone});
+  RegisterScreen({@required this.userType, @required this.popWhenDone}){
     print('Hi from RegisterScreen');
   }
 
@@ -19,7 +20,10 @@ class RegisterScreen extends StatefulWidget {
   final bool popWhenDone;
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState(userType, popWhenDone);
+  _RegisterScreenState createState(){
+    michaelTracker('${this.runtimeType}');
+  return _RegisterScreenState(userType, popWhenDone);
+  }
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
@@ -115,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               });
                             },
                             decoration: InputDecoration(hintText: '*email address'),
-//                      keyboardType: TextInputType.,
+                            keyboardType: TextInputType.emailAddress,
                             textAlign: TextAlign.center,
                           ),
                           TextField(
@@ -141,10 +145,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           //Show as soon as the user starts typing in Repeat password:
                           userPassword2 != ''
                               ? userPassword1 == userPassword2
-                                  //If passwords match:
-                                  ? Text('Passwords match', style: TextStyle(fontSize: 12, color: Colors.tealAccent))
-                                  //If passwords don't match:
-                                  : Text('Passwords don\'t match', style: TextStyle(fontSize: 12, color: Colors.red))
+                          //If passwords match:
+                              ? Text('Passwords match', style: TextStyle(fontSize: 12, color: Colors.tealAccent))
+                          //If passwords don't match:
+                              : Text('Passwords don\'t match', style: TextStyle(fontSize: 12, color: Colors.red))
                               : SizedBox(),
                           SizedBox(height: 10),
                           RaisedButton(
@@ -152,73 +156,79 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             //Button is active if all fields have values and passwords are equal:
                             onPressed: firstName != '' && userEmail != '' && userPassword1 != '' && userPassword1 == userPassword2
                                 ? () async {
-                                    setState(() {
-                                      showSpinner = true;
-                                    });
-                                    await MyFirebase.myFutureFirebaseApp;
-                                    try {
-                                      var user =
-                                          await MyFirebase.authObject.createUserWithEmailAndPassword(email: userEmail, password: userPassword1);
-                                      if (user != null) {
-                                        String myUid = MyFirebase.authObject.currentUser.uid;
-                                        userData = {
-                                          kFieldUserType: userDisplay(userType),
-                                          kFieldEmail: userEmail,
-                                          kFieldFirstName: firstName,
-                                          kFieldLastName: lastName,
-                                          kFieldRating: [],
-                                          kFieldPrice: null,
-                                          kFieldSocialMedia: {},
-                                          kFieldPortfolio: {},
-                                          kFieldVerified: false,
-                                          kFieldPresentation: '',
-                                          kFieldVisible: true,
-                                          kFieldWallet: 500,
-                                          kFieldUid: myUid
-                                        };
-                                        Myself.userData = userData;
-                                        try {
-                                          MyFirebase.storeObject.collection(kCollectionUserInfo).doc(myUid).set(userData);
-                                        } catch (e) {
-                                          print('Error trying to create userinfo doc: $e');
-                                        }
-                                        //This sub collection call works fine:
-                                        // MyFirebase.storeObject.collection(kCollectionUserInfo).doc('clients').collection('clients').doc(myUid).set({
-                                        //   kFieldEmail: userEmail,
-                                        //   kFieldFirstName: firstName,
-                                        //   kFieldLastName: lastName,
-                                        // });
-                                        setState(() {
-                                          showSpinner = false;
-                                        });
-                                        if (popWhenDone) {
-                                          Navigator.pop(context);
-                                        } else {
-                                          Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                            // return ProfileScreen(userData: userData);
-                                            return ProfileScreen();
-                                          }));
-                                        }
-                                      }
-                                    } catch (e) {
-                                      setState(() {
-                                        showSpinner = false;
-                                      });
-                                      print(e);
-                                      String code = e.code;
-                                      String formattedCode = code.replaceAll('-', ' ');
-                                      GiggzPopup(
-                                        context: context,
-                                        title: '${capitalizeFirst(formattedCode)}!',
-                                        desc: '${e.message}',
-                                      ).show();
-                                      // GiggzPopup(
-                                      //   context: context,
-                                      //   title: 'Failed to Register!',
-                                      //   desc: '$e',
-                                      // ).show();
-                                    }
+                              setState(() {
+                                showSpinner = true;
+                              });
+                              await MyFirebase.myFutureFirebaseApp;
+                              try {
+                                var user =
+                                await MyFirebase.authObject.createUserWithEmailAndPassword(email: userEmail, password: userPassword1);
+                                if (user != null) {
+                                  String myUid = MyFirebase.authObject.currentUser.uid;
+                                  userData = {
+                                    kFieldUserType: userDisplay(userType),
+                                    kFieldEmail: userEmail,
+                                    kFieldFirstName: firstName,
+                                    kFieldLastName: lastName,
+                                    kFieldRating: [],
+                                    kFieldPrice: null,
+                                    kFieldSocialMedia: {},
+                                    kFieldPortfolio: {},
+                                    kFieldVerified: false,
+                                    kFieldPresentation: '',
+                                    kFieldVisible: true,
+                                    kFieldWallet: 500,
+                                    kFieldUid: myUid,
+                                    kFieldTagLine: '',
+                                    kFieldLocation: '',
+                                  };
+                                  Myself.userData = userData;
+                                  try {
+                                    MyFirebase.storeObject.collection(kCollectionUserInfo).doc(myUid).set(userData);
+                                  } catch (e) {
+                                    print('Error trying to create userinfo doc: $e');
                                   }
+                                  //This sub collection call works fine:
+                                  // MyFirebase.storeObject.collection(kCollectionUserInfo).doc('clients').collection('clients').doc(myUid).set({
+                                  //   kFieldEmail: userEmail,
+                                  //   kFieldFirstName: firstName,
+                                  //   kFieldLastName: lastName,
+                                  // });
+                                  setState(() {
+                                    showSpinner = false;
+                                  });
+                                  if (popWhenDone) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  settings: RouteSettings(name: routeHomeScreen),
+                                                  builder: (context) {
+                                                    // return ProfileScreen(userData: userData);
+                                                    return HomeScreen();
+                                                  }));
+                                  }
+                                }
+                              } catch (e) {
+                                setState(() {
+                                  showSpinner = false;
+                                });
+                                print(e);
+                                String code = e.code;
+                                String formattedCode = code.replaceAll('-', ' ');
+                                GiggzPopup(
+                                  context: context,
+                                  title: '${capitalizeFirst(formattedCode)}!',
+                                  desc: '${e.message}',
+                                ).show();
+                                // GiggzPopup(
+                                //   context: context,
+                                //   title: 'Failed to Register!',
+                                //   desc: '$e',
+                                // ).show();
+                              }
+                            }
                                 : null,
                           ),
 //                            SizedBox(height: 500),

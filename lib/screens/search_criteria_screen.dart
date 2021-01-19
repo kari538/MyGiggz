@@ -1,3 +1,4 @@
+import 'package:my_giggz/my_firebase.dart';
 import 'package:my_giggz/constants.dart';
 import 'package:my_giggz/units/giggz_popup.dart';
 import 'package:my_giggz/my_types_and_functions.dart';
@@ -6,7 +7,10 @@ import 'package:flutter/material.dart';
 class SearchCriteriaScreen extends StatefulWidget {
 
   @override
-  _SearchCriteriaScreenState createState() => _SearchCriteriaScreenState();
+  _SearchCriteriaScreenState createState(){
+    michaelTracker('${this.runtimeType}');
+    return _SearchCriteriaScreenState();
+  }
 }
 
 class _SearchCriteriaScreenState extends State<SearchCriteriaScreen> {
@@ -107,6 +111,7 @@ class _SearchCriteriaScreenState extends State<SearchCriteriaScreen> {
                         });
                         criteria[critUserType] = value;
                         Navigator.pop(context, criteria);
+                        //settings: RouteSettings(name: routeUsersScreen),
                       },
                     ),
                   ],

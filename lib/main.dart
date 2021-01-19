@@ -1,8 +1,9 @@
+import 'package:navigation_history_observer/navigation_history_observer.dart';
 // import 'package:my_giggz/firebase_labels.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'cloud_messaging.dart';
 // import 'temp_firebase_operations.dart';
-// import 'message_notification_stream.dart';
+import 'message_notification_stream.dart';
 // import 'screens/notification_button_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:my_giggz/myself.dart';
@@ -39,13 +40,17 @@ void main() {
 class MyGiggz extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // MessageNotificationStream.initiate(context);
-
+    michaelTracker('${this.runtimeType}');
+    MessageNotificationStream.initiate(context);
     return MaterialApp(
       theme: giggzTheme,
       home: WelcomeScreen(),  //IF not already logged in, in which case they'll get to their profile page.
       // home: SearchScreen(),  //Too much stuff to fix...!!
       // home: NotificationButtonScreen(),
+      navigatorObservers: [NavigationHistoryObserver()],
+      // showPerformanceOverlay: ,
     );
   }
 }
+
+

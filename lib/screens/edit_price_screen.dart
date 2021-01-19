@@ -1,4 +1,4 @@
-// import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:my_giggz/my_firebase.dart';
 import 'package:flutter/material.dart';
 
 class EditPriceScreen extends StatelessWidget {
@@ -8,6 +8,7 @@ class EditPriceScreen extends StatelessWidget {
   @override
 
   Widget build(BuildContext context) {
+    michaelTracker('${this.runtimeType}');
     String newPrice;
     return Scaffold(
       body: Padding(

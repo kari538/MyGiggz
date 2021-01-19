@@ -20,6 +20,10 @@ ThemeData giggzTheme = ThemeData.dark().copyWith(
     buttonColor: Colors.indigo,
 //    disabledColor: Colors.blueGrey,
   ),
+  bottomSheetTheme: BottomSheetThemeData(
+    backgroundColor: Colors.deepPurple,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+  ),
   // inputDecorationTheme: InputDecorationTheme().copyWith(
     // hintStyle: TextStyle(color: Colors.pink),
   // ),
